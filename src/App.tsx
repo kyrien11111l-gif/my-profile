@@ -57,8 +57,8 @@ export function App() {
       />
       <div className="workspace grid h-[calc(100vh-58px)] grid-cols-[88px_minmax(470px,560px)_minmax(550px,1fr)] max-[1100px]:grid-cols-[78px_minmax(430px,520px)_minmax(520px,1fr)] max-[820px]:block">
         <Sidebar />
-        <section className={`editor-column relative min-w-0 border-r border-[#d9dce5] bg-[#f4f5f9] max-[820px]:h-[calc(100%-62px)] max-[820px]:border-0 ${mobilePane === 'preview' ? 'max-[820px]:hidden' : ''}`}>
-          <div className="h-full overflow-y-auto"><EditorPanel /></div>
+        <section className={`editor-column relative min-w-0 border-r border-[#d9dce5] bg-[#f4f5f9] h-full overflow-y-auto max-[820px]:border-0 ${mobilePane === 'preview' ? 'max-[820px]:hidden' : ''}`}>
+          <EditorPanel />
           {drawer && (
             <div className="absolute inset-0 z-10 flex justify-end bg-[#25293842] backdrop-blur-[2px]" role="dialog" aria-label={drawer === 'style' ? '模板样式' : '模块管理'}>
               {drawer === 'style' ? <StylePanel onClose={() => setDrawer(null)} /> : <ModuleManager onClose={() => setDrawer(null)} />}
