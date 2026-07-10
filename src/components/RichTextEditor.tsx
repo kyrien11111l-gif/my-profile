@@ -64,15 +64,15 @@ export function RichTextEditor({ value, onChange, placeholder = '填写工作内
   ]
 
   return (
-    <div className="rich-editor">
-      <div className="rich-toolbar" role="toolbar" aria-label="内容格式">
+    <div className="overflow-hidden rounded-[10px] border border-[#dadee7] bg-[#fbfbfd] transition focus-within:border-[#f78a6a] focus-within:bg-white focus-within:shadow-[0_0_0_3px_#f9734518]">
+      <div className="flex min-h-[39px] flex-wrap items-center gap-0.5 border-b border-[#dfe2e9] bg-[#eef0f5] px-[7px] py-1" role="toolbar" aria-label="内容格式">
         {tools.map(({ label, icon: Icon, action }) => (
-          <button key={label} type="button" aria-label={label} title={label} onMouseDown={action}><Icon size={17} /></button>
+          <button className="grid size-[30px] place-items-center rounded-[5px] border-0 bg-transparent p-0 text-[#545b68] hover:bg-[#dfe3eb] hover:text-[#1f2530] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#f17854]" key={label} type="button" aria-label={label} title={label} onMouseDown={action}><Icon size={17} /></button>
         ))}
       </div>
       <div
         ref={editorRef}
-        className="rich-content"
+        className="rich-content min-h-[150px] p-[15px] text-[13px] leading-[1.65] text-[#282d37] outline-none [overflow-wrap:anywhere]"
         contentEditable
         suppressContentEditableWarning
         role="textbox"

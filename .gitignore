@@ -4,3 +4,4 @@ dist
 coverage
 data/*.tmp
 npm-debug.log*
+*.tsbuildinfo

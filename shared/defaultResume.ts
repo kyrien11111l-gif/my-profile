@@ -14,7 +14,7 @@ export const defaultResume: ResumeDocument = {
     accentColor: '#2563eb',
     fontFamily: 'sans',
     fontSize: 12,
-    lineHeight: 1.55,
+    lineHeight: 19,
     pageMargin: 42,
   },
   sections: [

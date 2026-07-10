@@ -11,9 +11,9 @@
   "style": {
     "accentColor": "#2563eb",
     "fontFamily": "sans",
-    "fontSize": 12,
-    "lineHeight": 1.55,
-    "pageMargin": 42
+    "fontSize": 16,
+    "lineHeight": 20,
+    "pageMargin": 30
   },
   "sections": [
     {
@@ -28,8 +28,9 @@
           "subtitle": "",
           "startDate": "",
           "endDate": "",
-          "description": "6 年互联网产品设计经验，擅长从业务目标与用户洞察出发，建立清晰、可扩展的体验方案。曾主导多个从 0 到 1 项目，持续用数据验证设计价值。xxxxxxxxxxxxxxx",
-          "bullets": []
+          "description": "",
+          "bullets": [],
+          "contentHtml": "<p></p><ul><li>6 年互联网产品设计经验，擅长从业务目标与用户洞察出发，建立清晰、可扩展的体验方案。曾主导多个从 0 到 1 项目，持续用数据验证设计价值。xxxxxxxxxxxxxxx</li></ul><p></p>"
         },
         {
           "id": "5dae452e-895d-4fd6-9587-c35d4015f8c0",
@@ -37,8 +38,29 @@
           "subtitle": "",
           "startDate": "",
           "endDate": "",
-          "description": "asdfsafdsddsdfdsafdsadfsafdsadsafdsfasa",
-          "bullets": []
+          "description": "",
+          "bullets": [],
+          "contentHtml": "<p></p><ol><li>asdfsafdsddsdfdsafdsadfsafdsadsafdsfasa</li></ol><p></p>"
+        },
+        {
+          "id": "704f1c76-4288-41a7-8e64-184f1c753259",
+          "title": "",
+          "subtitle": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "bullets": [],
+          "contentHtml": ""
+        },
+        {
+          "id": "47b76a98-a7c5-487d-9d8b-392905ed4b87",
+          "title": "",
+          "subtitle": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "bullets": [],
+          "contentHtml": ""
         }
       ]
     },
@@ -69,6 +91,16 @@
             "独立负责移动端增长活动与会员体系设计",
             "沉淀交互规范与组件库，设计交付效率提升 30%"
           ]
+        },
+        {
+          "id": "4435b4c3-3c2d-45da-9959-d35ce8d0a001",
+          "title": "",
+          "subtitle": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "bullets": [],
+          "contentHtml": ""
         }
       ]
     },
@@ -82,8 +114,8 @@
           "id": "project-1",
           "title": "企业协作平台体验升级",
           "subtitle": "项目负责人",
-          "startDate": "2023.06",
-          "endDate": "2024.02",
+          "startDate": "2025.12",
+          "endDate": "至今",
           "description": "面向中大型企业的协作产品，覆盖信息架构、核心流程与视觉系统升级。dddddd",
           "bullets": [
             "完成 20+ 场用户访谈并提炼三类核心任务模型",
@@ -97,7 +129,18 @@
           "startDate": "",
           "endDate": "",
           "description": "",
-          "bullets": []
+          "bullets": [],
+          "contentHtml": "<ul><li>sddddddddasfsdafsd</li><li>sdjkjfdsjakdkljsafds\\sadklfjsadlkf</li><li><br></li></ul>"
+        },
+        {
+          "id": "f9c8effb-d9f8-49b7-b2ba-f782b597802a",
+          "title": "",
+          "subtitle": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "bullets": [],
+          "contentHtml": ""
         }
       ]
     },
@@ -145,7 +188,28 @@
       "type": "awards",
       "title": "荣誉奖项",
       "visible": true,
-      "items": []
+      "items": [
+        {
+          "id": "30808c2f-a3ff-4e98-aaee-91c2e56769a0",
+          "title": "",
+          "subtitle": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "bullets": [],
+          "contentHtml": "sdafsdafdsafdsafdsafds"
+        },
+        {
+          "id": "e9d914bb-f7d0-4338-933d-643a02cb987b",
+          "title": "",
+          "subtitle": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "bullets": [],
+          "contentHtml": "<ul><li>dsadffffffffffff</li></ul>"
+        }
+      ]
     }
   ]
 }

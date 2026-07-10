@@ -18,6 +18,16 @@ export async function readResumeFile(filePath: string): Promise<ResumeDocument> 
     } catch {
       throw new ResumeFileError('简历数据文件不是有效的 JSON，请修复文件后重试。', 'INVALID_FILE')
     }
+    if (json && typeof json === 'object' && 'style' in json) {
+      const style = (json as { style?: Record<string, unknown> }).style
+      if (style && typeof style.fontSize === 'number') style.fontSize = Math.round(style.fontSize)
+      if (style && typeof style.pageMargin === 'number') style.pageMargin = Math.round(style.pageMargin)
+      if (style && typeof style.lineHeight === 'number') {
+        style.lineHeight = style.lineHeight <= 3
+          ? Math.round(style.lineHeight * (typeof style.fontSize === 'number' ? style.fontSize : 12))
+          : Math.round(style.lineHeight)
+      }
+    }
     const result = validateResume(json)
     if (!result.success) {
       throw new ResumeFileError('简历数据文件结构不正确，请修复文件后重试。', 'INVALID_FILE')

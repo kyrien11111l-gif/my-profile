@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AlertTriangle, FileText, LoaderCircle, RefreshCw } from 'lucide-react'
 import { useResume } from './state/ResumeContext'
 import { Topbar } from './components/Topbar'
@@ -12,6 +12,12 @@ export function App() {
   const { document, loading, loadError, reload } = useResume()
   const [mobilePane, setMobilePane] = useState<'edit' | 'preview'>('edit')
   const [drawer, setDrawer] = useState<'style' | 'modules' | null>(null)
+
+  useEffect(() => {
+    if (!document) return
+    const name = document.basics.name.trim() || '未命名'
+    window.document.title = `${name}-简历`
+  }, [document?.basics.name])
 
   if (loading) {
     return (
@@ -42,14 +48,14 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#eef0f5]">
+    <div className="app-shell min-h-screen bg-[#eef0f5]">
       <Topbar
         mobilePane={mobilePane}
         onMobilePane={setMobilePane}
         onStyle={() => setDrawer(drawer === 'style' ? null : 'style')}
         onModules={() => setDrawer(drawer === 'modules' ? null : 'modules')}
       />
-      <div className="grid h-[calc(100vh-58px)] grid-cols-[88px_minmax(470px,560px)_minmax(550px,1fr)] max-[1100px]:grid-cols-[78px_minmax(430px,520px)_minmax(520px,1fr)] max-[820px]:block">
+      <div className="workspace grid h-[calc(100vh-58px)] grid-cols-[88px_minmax(470px,560px)_minmax(550px,1fr)] max-[1100px]:grid-cols-[78px_minmax(430px,520px)_minmax(520px,1fr)] max-[820px]:block">
         <Sidebar />
         <section className={`editor-column relative min-w-0 border-r border-[#d9dce5] bg-[#f4f5f9] max-[820px]:h-[calc(100%-62px)] max-[820px]:border-0 ${mobilePane === 'preview' ? 'max-[820px]:hidden' : ''}`}>
           <div className="h-full overflow-y-auto"><EditorPanel /></div>

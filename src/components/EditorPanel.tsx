@@ -1,14 +1,15 @@
-import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { emptyItem, type ResumeItem } from '../../shared/resume'
 import { useResume } from '../state/ResumeContext'
 import { itemRichText } from '../richText'
 import { RichTextEditor } from './RichTextEditor'
+import { MonthPicker } from './MonthPicker'
 
 function Field({ label, value, onChange, placeholder, type = 'text', error }: {
   label: string; value: string; onChange: (value: string) => void; placeholder?: string; type?: string; error?: string
 }) {
-  return <label className="flex min-w-0 flex-col gap-[7px]"><span className="text-xs font-semibold text-[#676d79]">{label}</span><input className={`h-[42px] w-full rounded-lg border bg-[#fbfbfd] px-3 text-[#252a35] outline-none transition focus:border-[#f78a6a] focus:bg-white focus:shadow-[0_0_0_3px_#f9734518] ${error ? 'border-red-400 bg-[#fff8f8]' : 'border-[#dadee7]'}`} type={type} value={value} placeholder={placeholder} aria-invalid={Boolean(error)} onChange={(event) => onChange(event.target.value)} />{error && <small className="text-[11px] text-[#dc4c4c]">{error}</small>}</label>
+  return <label className="flex min-w-0 flex-col gap-[7px]"><span className="text-xs font-semibold text-[#676d79]">{label}</span><span className="relative"><input className={`h-[42px] w-full rounded-lg border bg-[#fbfbfd] px-3 pr-10 text-[#252a35] outline-none transition focus:border-[#f78a6a] focus:bg-white focus:shadow-[0_0_0_3px_#f9734518] ${error ? 'border-red-400 bg-[#fff8f8]' : 'border-[#dadee7]'}`} type={type} value={value} placeholder={placeholder} aria-invalid={Boolean(error)} onChange={(event) => onChange(event.target.value)} />{value && <button type="button" aria-label={`清空${label.replace(' *', '')}`} className="absolute top-1/2 right-2 grid size-7 -translate-y-1/2 place-items-center rounded-md text-[#a0a5b0] hover:bg-[#eceef3] hover:text-[#4b515d]" onClick={(event) => { event.preventDefault(); onChange('') }}><X size={15} /></button>}</span>{error && <small className="text-[11px] text-[#dc4c4c]">{error}</small>}</label>
 }
 
 export function EditorPanel() {
@@ -87,7 +88,7 @@ function ItemCard({ item, index, total, simple, onUpdate, onRemove, onMove }: {
       </header>
       {!collapsed && <div className="grid gap-4 p-[17px]">
         {!simple && <div className="grid grid-cols-2 gap-3.5 max-[540px]:grid-cols-1"><Field label="名称 / 职位" value={item.title} onChange={(value) => set('title', value)} /><Field label="机构 / 角色" value={item.subtitle} onChange={(value) => set('subtitle', value)} /></div>}
-        {!simple && <div className="grid grid-cols-2 gap-3.5 max-[540px]:grid-cols-1"><Field label="开始时间" value={item.startDate} placeholder="2022.04" onChange={(value) => set('startDate', value)} /><Field label="结束时间" value={item.endDate} placeholder="至今" onChange={(value) => set('endDate', value)} /></div>}
+        {!simple && <div className="grid grid-cols-2 gap-3.5 max-[540px]:grid-cols-1"><MonthPicker label="开始时间" value={item.startDate} onChange={(value) => set('startDate', value)} /><MonthPicker label="结束时间" value={item.endDate} allowPresent onChange={(value) => set('endDate', value)} /></div>}
         <RichTextEditor
           value={itemRichText(item)}
           onChange={(contentHtml) => onUpdate((entry) => {

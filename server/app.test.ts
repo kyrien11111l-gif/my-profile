@@ -47,6 +47,15 @@ describe('resume API', () => {
     expect(await readFile(dataFile, 'utf8')).toBe('{ broken json')
   })
 
+  it('converts legacy multiplier line height to pixels', async () => {
+    const legacy = structuredClone(defaultResume) as typeof defaultResume & { style: { lineHeight: number } }
+    legacy.style.fontSize = 12
+    legacy.style.lineHeight = 1.5
+    await writeFile(dataFile, JSON.stringify(legacy), 'utf8')
+    const response = await request(createApp({ dataFile })).get('/api/resume').expect(200)
+    expect(response.body.style.lineHeight).toBe(18)
+  })
+
   it('returns a clear error when the target cannot be written', async () => {
     const blocker = path.join(directory, 'not-a-directory')
     await writeFile(blocker, 'file', 'utf8')

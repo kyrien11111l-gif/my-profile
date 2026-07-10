@@ -10,7 +10,7 @@ describe('resume validation', () => {
   it('rejects invalid email and style ranges', () => {
     const document = structuredClone(defaultResume)
     document.basics.email = 'invalid'
-    document.style.fontSize = 30
+    document.style.fontSize = 101
     expect(validateResume(document).success).toBe(false)
   })
 })

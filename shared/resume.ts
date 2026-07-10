@@ -44,9 +44,9 @@ export const resumeDocumentSchema = z.object({
   style: z.object({
     accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     fontFamily: z.enum(['sans', 'serif']),
-    fontSize: z.number().min(10).max(16),
-    lineHeight: z.number().min(1.2).max(2),
-    pageMargin: z.number().min(24).max(64),
+    fontSize: z.number().int().min(1).max(100),
+    lineHeight: z.number().int().min(1).max(100),
+    pageMargin: z.number().int().min(1).max(100),
   }),
   sections: z.array(resumeSectionSchema).min(1).max(20),
 })
