@@ -2,6 +2,6 @@ node_modules
 dist
 .vite
 coverage
-data/*.tmp
 npm-debug.log*
 *.tsbuildinfo
+data/resume.json

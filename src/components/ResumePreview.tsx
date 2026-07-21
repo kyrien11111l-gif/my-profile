@@ -6,6 +6,7 @@ import { itemRichText } from '../richText'
 interface PageSection {
   sectionId: string
   itemIds: string[]
+  showHeading: boolean
 }
 
 interface PageSpec {
@@ -41,7 +42,7 @@ export function ResumePreview() {
         const currentPage = () => nextPages[nextPages.length - 1]
 
         if (sectionHeight <= remaining) {
-          currentPage().sections.push({ sectionId: section.id, itemIds: allItemIds })
+          currentPage().sections.push({ sectionId: section.id, itemIds: allItemIds, showHeading: true })
           remaining -= sectionHeight
           continue
         }
@@ -52,6 +53,7 @@ export function ResumePreview() {
           ? firstItem.getBoundingClientRect().top - sectionElement.getBoundingClientRect().top
           : sectionHeight
         let segment: string[] = []
+        let showHeading = true
 
         for (const itemElement of itemElements) {
           const itemId = itemElement.dataset.itemId
@@ -60,7 +62,10 @@ export function ResumePreview() {
           const required = (segment.length === 0 ? headingHeight : 0) + itemHeight
 
           if (required > remaining && (currentPage().sections.length > 0 || segment.length > 0)) {
-            if (segment.length > 0) currentPage().sections.push({ sectionId: section.id, itemIds: segment })
+            if (segment.length > 0) {
+              currentPage().sections.push({ sectionId: section.id, itemIds: segment, showHeading })
+              showHeading = false
+            }
             nextPages.push({ showHeader: false, sections: [] })
             remaining = pageHeight
             segment = []
@@ -71,7 +76,7 @@ export function ResumePreview() {
           remaining -= itemHeight
         }
 
-        if (segment.length > 0) currentPage().sections.push({ sectionId: section.id, itemIds: segment })
+        if (segment.length > 0) currentPage().sections.push({ sectionId: section.id, itemIds: segment, showHeading })
       }
 
       const usablePages = nextPages.filter((page, index) => index === 0 || page.sections.length > 0)
@@ -96,7 +101,7 @@ export function ResumePreview() {
   const fontClass = style.fontFamily === 'sans' ? 'font-sans' : 'font-[Georgia,Songti_SC,SimSun,serif]'
   const fallbackPages: PageSpec[] = [{
     showHeader: true,
-    sections: visibleSections.map((section) => ({ sectionId: section.id, itemIds: section.items.map((item) => item.id) })),
+    sections: visibleSections.map((section) => ({ sectionId: section.id, itemIds: section.items.map((item) => item.id), showHeading: true })),
   }]
   const renderedPages = pages.length > 0 ? pages : fallbackPages
 
@@ -110,7 +115,7 @@ export function ResumePreview() {
               const section = visibleSections.find((candidate) => candidate.id === group.sectionId)
               if (!section) return null
               const items = section.items.filter((item) => group.itemIds.includes(item.id))
-              return <PreviewSection key={`${group.sectionId}-${group.itemIds[0] ?? 'empty'}`} section={section} items={items} />
+              return <PreviewSection key={`${group.sectionId}-${group.itemIds[0] ?? 'empty'}`} section={section} items={items} showHeading={group.showHeading} />
             })}
           </main>
         </article>
@@ -119,7 +124,7 @@ export function ResumePreview() {
 
     <div ref={measureRef} aria-hidden="true" className={`resume-measure pointer-events-none fixed top-0 left-[-10000px] invisible text-[length:var(--resume-font-size)] leading-[1.34] text-black ${fontClass}`} style={{ ...css, width: `${794 - style.pageMargin * 2}px` }}>
       <ResumeHeader document={document} />
-      <main>{visibleSections.map((section) => <PreviewSection key={section.id} section={section} items={section.items} />)}</main>
+      <main>{visibleSections.map((section) => <PreviewSection key={section.id} section={section} items={section.items} showHeading />)}</main>
     </div>
   </>
 }
@@ -136,9 +141,9 @@ function ResumeHeader({ document }: { document: ResumeDocument }) {
   </header>
 }
 
-function PreviewSection({ section, items }: { section: ResumeSection; items: ResumeItem[] }) {
+function PreviewSection({ section, items, showHeading = true }: { section: ResumeSection; items: ResumeItem[]; showHeading?: boolean }) {
   return <section data-section-id={section.id} className="mb-2 break-inside-avoid">
-    <h2 className="mt-0 mb-[5px] border-b border-[var(--accent)] pb-px text-[length:calc(var(--resume-font-size)*1.2)] leading-[1.35] font-semibold text-[var(--accent)]">{section.title}</h2>
+    {showHeading && <h2 className="mt-0 mb-[5px] border-b border-[var(--accent)] pb-px text-[length:calc(var(--resume-font-size)*1.2)] leading-[1.35] font-semibold text-[var(--accent)]">{section.title}</h2>}
     {items.map((item) => {
       const richText = itemRichText(item)
       return <div data-item-id={item.id} className="resume-item mb-1 break-inside-avoid" key={item.id}>
