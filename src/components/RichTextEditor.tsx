@@ -28,7 +28,22 @@ export function RichTextEditor({ value, onChange, placeholder = '填写工作内
   }
 
   const run = (command: string, argument?: string) => {
-    editorRef.current?.focus()
+    const editor = editorRef.current
+    editor?.focus()
+    if (editor && (command === 'insertUnorderedList' || command === 'insertOrderedList')) {
+      const changed = applyListToSelection(editor, command === 'insertOrderedList' ? 'ol' : 'ul')
+      if (changed) {
+        emitChange()
+        return
+      }
+    }
+    if (editor && (command === 'indent' || command === 'outdent')) {
+      const changed = applyIndentToSelection(editor, command === 'indent' ? 1 : -1)
+      if (changed) {
+        emitChange()
+        return
+      }
+    }
     document.execCommand(command, false, argument)
     emitChange()
   }
@@ -84,4 +99,159 @@ export function RichTextEditor({ value, onChange, placeholder = '填写工作内
       />
     </div>
   )
+}
+
+export function applyIndentToSelection(editor: HTMLElement, direction: 1 | -1) {
+  const selection = window.getSelection()
+  if (!selection || selection.rangeCount === 0) return false
+  const range = selection.getRangeAt(0)
+  if (!editor.contains(range.commonAncestorContainer)) return false
+  const anchorElement = selection.anchorNode instanceof Element ? selection.anchorNode : selection.anchorNode?.parentElement
+  const collapsedBlock = selection.isCollapsed ? anchorElement?.closest<HTMLElement>('p, li') : null
+  const blocks = collapsedBlock && editor.contains(collapsedBlock)
+    ? [collapsedBlock]
+    : Array.from(editor.querySelectorAll<HTMLElement>('p, li')).filter((block) => {
+      try { return range.intersectsNode(block) } catch { return false }
+    })
+  if (blocks.length === 0 && !selection.isCollapsed) {
+    const container = window.document.createElement('div')
+    container.append(range.extractContents())
+    const lines = selectedHtmlLines(container.innerHTML)
+    if (lines.length === 0) return false
+    const fragment = window.document.createDocumentFragment()
+    const created: HTMLParagraphElement[] = []
+    for (const line of lines) {
+      const paragraph = window.document.createElement('p')
+      if (direction > 0) paragraph.dataset.indent = '1'
+      paragraph.innerHTML = line
+      fragment.append(paragraph)
+      created.push(paragraph)
+    }
+    range.insertNode(fragment)
+    range.setStartBefore(created[0])
+    range.setEndAfter(created[created.length - 1])
+    selection.removeAllRanges()
+    selection.addRange(range)
+    return true
+  }
+  if (blocks.length === 0) return false
+
+  for (const block of blocks) {
+    const current = Number.parseInt(block.dataset.indent || '0', 10) || 0
+    const next = Math.min(4, Math.max(0, current + direction))
+    if (next === 0) delete block.dataset.indent
+    else block.dataset.indent = String(next)
+  }
+  range.setStartBefore(blocks[0])
+  range.setEndAfter(blocks[blocks.length - 1])
+  selection.removeAllRanges()
+  selection.addRange(range)
+  return true
+}
+
+export function applyListToSelection(editor: HTMLElement, tagName: 'ul' | 'ol') {
+  const selection = window.getSelection()
+  if (!selection || selection.rangeCount === 0) return false
+  const range = selection.getRangeAt(0)
+  if (!editor.contains(range.commonAncestorContainer)) return false
+
+  const anchorElement = selection.anchorNode instanceof Element ? selection.anchorNode : selection.anchorNode?.parentElement
+  const collapsedItem = selection.isCollapsed ? anchorElement?.closest('li') : null
+  const selectedItems = collapsedItem && editor.contains(collapsedItem)
+    ? [collapsedItem]
+    : Array.from(editor.querySelectorAll('li')).filter((item) => {
+      try { return range.intersectsNode(item) } catch { return false }
+    })
+
+  if (selectedItems.length > 0) {
+    const selected = new Set(selectedItems)
+    const parentLists = Array.from(new Set(selectedItems.map((item) => item.parentElement).filter((parent): parent is HTMLOListElement | HTMLUListElement => parent?.tagName === 'UL' || parent?.tagName === 'OL')))
+    const toggleOff = selectedItems.every((item) => item.parentElement?.tagName.toLowerCase() === tagName)
+    const changedBlocks: HTMLElement[] = []
+
+    for (const parent of parentLists) {
+      const replacement = window.document.createDocumentFragment()
+      let currentList: HTMLOListElement | HTMLUListElement | null = null
+      let currentTag = ''
+      for (const item of Array.from(parent.children)) {
+        if (!(item instanceof HTMLLIElement)) continue
+        if (toggleOff && selected.has(item)) {
+          currentList = null
+          currentTag = ''
+          const paragraph = window.document.createElement('p')
+          while (item.firstChild) paragraph.append(item.firstChild)
+          replacement.append(paragraph)
+          changedBlocks.push(paragraph)
+          continue
+        }
+        const nextTag = selected.has(item) ? tagName : parent.tagName.toLowerCase()
+        if (!currentList || currentTag !== nextTag) {
+          currentList = window.document.createElement(nextTag) as HTMLOListElement | HTMLUListElement
+          currentTag = nextTag
+          replacement.append(currentList)
+        }
+        currentList.append(item)
+        if (selected.has(item)) changedBlocks.push(item)
+      }
+      parent.replaceWith(replacement)
+    }
+
+    if (changedBlocks.length > 0) {
+      range.setStartBefore(changedBlocks[0])
+      range.setEndAfter(changedBlocks[changedBlocks.length - 1])
+      selection.removeAllRanges()
+      selection.addRange(range)
+    }
+    return true
+  }
+
+  const container = window.document.createElement('div')
+  container.append(range.extractContents())
+  const lines = selectedHtmlLines(container.innerHTML)
+  if (lines.length === 0) return false
+
+  const list = window.document.createElement(tagName)
+  for (const line of lines) {
+    const item = window.document.createElement('li')
+    item.innerHTML = line
+    list.append(item)
+  }
+  range.insertNode(list)
+  wrapAdjacentInlineContent(list, 'previousSibling')
+  wrapAdjacentInlineContent(list, 'nextSibling')
+  range.selectNodeContents(list)
+  selection.removeAllRanges()
+  selection.addRange(range)
+  return true
+}
+
+function selectedHtmlLines(html: string) {
+  const lineBreak = '__RESUME_STUDIO_LINE_BREAK__'
+  return html
+    .replace(/<br\s*\/?\s*>/gi, lineBreak)
+    .replace(/<\/(p|div|li)>\s*<(p|div|li)(?:\s[^>]*)?>/gi, lineBreak)
+    .replace(/<\/?(?:ul|ol)(?:\s[^>]*)?>/gi, '')
+    .replace(/<\/?(?:p|div|li)(?:\s[^>]*)?>/gi, '')
+    .split(lineBreak)
+    .filter((line) => {
+      const probe = window.document.createElement('div')
+      probe.innerHTML = line
+      return Boolean(probe.textContent?.trim())
+    })
+}
+
+function wrapAdjacentInlineContent(list: HTMLElement, direction: 'previousSibling' | 'nextSibling') {
+  const nodes: Node[] = []
+  let sibling = list[direction]
+  while (sibling) {
+    if (sibling instanceof HTMLElement && ['P', 'DIV', 'UL', 'OL'].includes(sibling.tagName)) break
+    const next = sibling[direction]
+    if (sibling.textContent?.trim() || sibling instanceof HTMLElement) nodes.push(sibling)
+    sibling = next
+  }
+  if (nodes.length === 0) return
+  if (direction === 'previousSibling') nodes.reverse()
+  const paragraph = window.document.createElement('p')
+  for (const node of nodes) paragraph.append(node)
+  direction === 'previousSibling' ? list.before(paragraph) : list.after(paragraph)
 }

@@ -63,4 +63,28 @@ describe('resume API', () => {
       .put('/api/resume').send(defaultResume).expect(500)
     expect(response.body.code).toBe('WRITE_FAILED')
   })
+
+  it('returns a vector PDF generated from the same-host preview', async () => {
+    const pdfGenerator = async (sourceUrl: string) => {
+      expect(sourceUrl).toBe('http://localhost:5173/?pdf=1')
+      return new Uint8Array(Buffer.from('%PDF-1.7 test'))
+    }
+    const response = await request(createApp({ dataFile, pdfGenerator }))
+      .post('/api/resume/pdf').set('Origin', 'http://localhost:5173').expect(200)
+    expect(response.headers['content-type']).toContain('application/pdf')
+    expect(response.headers['content-disposition']).toContain(encodeURIComponent('林知夏-简历.pdf'))
+    expect(response.body).toBeInstanceOf(Buffer)
+  })
+
+  it('rejects an untrusted PDF source', async () => {
+    const response = await request(createApp({ dataFile, pdfGenerator: async () => new Uint8Array() }))
+      .post('/api/resume/pdf').set('Origin', 'https://example.com').expect(403)
+    expect(response.body.code).toBe('INVALID_PDF_SOURCE')
+  })
+
+  it('reports PDF generator failures', async () => {
+    const response = await request(createApp({ dataFile, pdfGenerator: async () => { throw new Error('Chrome 启动失败') } }))
+      .post('/api/resume/pdf').set('Origin', 'http://localhost:5173').expect(500)
+    expect(response.body).toMatchObject({ code: 'PDF_GENERATION_FAILED', error: 'Chrome 启动失败' })
+  })
 })

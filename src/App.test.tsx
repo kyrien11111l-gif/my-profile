@@ -8,6 +8,7 @@ describe('resume editor', () => {
   const fetchMock = vi.fn()
 
   beforeEach(() => {
+    localStorage.clear()
     fetchMock.mockReset()
     fetchMock.mockResolvedValue({ ok: true, json: async () => structuredClone(defaultResume) })
     vi.stubGlobal('fetch', fetchMock)
@@ -56,5 +57,24 @@ describe('resume editor', () => {
     expect(screen.getByLabelText('手机')).toHaveValue('')
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2), { timeout: 1400 })
     expect(JSON.parse(fetchMock.mock.calls[1][1]?.body as string).basics.phone).toBe('')
+  })
+
+  it('hides the editor, centers the preview, and remembers the preference', async () => {
+    render(<ResumeProvider><App /></ResumeProvider>)
+    await screen.findByDisplayValue('林知夏')
+    fireEvent.click(screen.getByRole('button', { name: '隐藏编辑栏' }))
+    expect(screen.getByRole('button', { name: '显示编辑栏' })).toBeInTheDocument()
+    expect(JSON.parse(localStorage.getItem('resume-studio:editor-layout') || '{}')).toMatchObject({ hidden: true })
+    expect(screen.getByRole('separator', { name: '调整编辑栏宽度' })).toHaveAttribute('tabindex', '-1')
+  })
+
+  it('resizes the editor with the accessible separator and validates stored values', async () => {
+    localStorage.setItem('resume-studio:editor-layout', JSON.stringify({ width: 9999, hidden: 'no' }))
+    render(<ResumeProvider><App /></ResumeProvider>)
+    await screen.findByDisplayValue('林知夏')
+    const separator = screen.getByRole('separator', { name: '调整编辑栏宽度' })
+    expect(separator).toHaveAttribute('aria-valuenow', '560')
+    fireEvent.keyDown(separator, { key: 'ArrowLeft' })
+    expect(separator).toHaveAttribute('aria-valuenow', '544')
   })
 })

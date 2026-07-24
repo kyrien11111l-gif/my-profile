@@ -9,11 +9,11 @@
     "website": "portfolio.example.com"
   },
   "style": {
-    "accentColor": "#2563eb",
+    "accentColor": "#1266bf",
     "fontFamily": "sans",
     "fontSize": 16,
-    "lineHeight": 20,
-    "pageMargin": 30
+    "lineHeight": 18,
+    "pageMargin": 20
   },
   "sections": [
     {
@@ -30,7 +30,7 @@
           "endDate": "",
           "description": "",
           "bullets": [],
-          "contentHtml": "<p></p><ul><li>6 年互联网产品设计经验，擅长从业务目标与用户洞察出发，建立清晰、可扩展的体验方案。曾主导多个从 0 到 1 项目，持续用数据验证设计价值。xxxxxxxxxxxxxxx</li></ul><p></p>"
+          "contentHtml": "<p></p><p></p><p></p><ul><li>6 年互联网产品设计经验，擅长从业务目标与用户洞察出发，建立清晰、可扩展的体验方案。曾主导多个从 0 到 1 项目，持续用数据验证设计价值。xxxxxxxxxxxxxxx</li></ul><p></p>"
         },
         {
           "id": "5dae452e-895d-4fd6-9587-c35d4015f8c0",
@@ -40,7 +40,7 @@
           "endDate": "",
           "description": "",
           "bullets": [],
-          "contentHtml": "<p></p><ol><li>asdfsafdsddsdfdsafdsadfsafdsadsafdsfasa</li></ol><p></p>"
+          "contentHtml": "<p></p><ul><li>asdfsafdsddsdfdsafdsadfsafdsadsafdsfasa</li></ul><ol><ol><li>啊时代峰峻卡什莱夫</li><li><br></li></ol></ol><p></p>"
         },
         {
           "id": "704f1c76-4288-41a7-8e64-184f1c753259",
@@ -78,7 +78,7 @@
           "endDate": "至今xxx",
           "description": "",
           "bullets": [],
-          "contentHtml": "<ul><li>负责核心商业产品体验策略，推动设计系统覆盖 4 条业务线</li><li>重构关键转化路径，上线后三个月核心转化率提升 18%</li><li>协同产品、研发与数据团队建立体验指标追踪机制ddddd</li></ul>"
+          "contentHtml": "<ul><li>负责核心商业产品体验策略，推动设计系统覆盖 4 条业务线</li><li>重构关键转化路径，上线后三个月核心转化率提升 18%</li></ul><i></i><ol><li><i>safjasdfj</i></li><li><i>asjfaskdf</i></li><li><i>asdfasf</i>协同产品、研发与数据团队建立体验指标追踪机制ddddd</li></ol>"
         },
         {
           "id": "experience-2",
@@ -100,7 +100,7 @@
           "endDate": "",
           "description": "",
           "bullets": [],
-          "contentHtml": ""
+          "contentHtml": "撒的金凤说的考拉啊撒大是大非的撒撒点附近卡上了<br>啊就是大发快睡觉暗示法啊时代嘉丽撒点发撒开对方理解"
         }
       ]
     },
@@ -116,11 +116,9 @@
           "subtitle": "项目负责人",
           "startDate": "2025.12",
           "endDate": "至今",
-          "description": "面向中大型企业的协作产品，覆盖信息架构、核心流程与视觉系统升级。dddddd",
-          "bullets": [
-            "完成 20+ 场用户访谈并提炼三类核心任务模型",
-            "产品满意度由 7.2 提升至 8.6，支持团队获得年度体验奖"
-          ]
+          "description": "",
+          "bullets": [],
+          "contentHtml": "<p></p><ol><li>面向中大型企业的协作产品，覆盖信息架构、核心流程与视觉系统升级。dddddd</li><li>完成 20+ 场用户访谈并提炼三类核心任务模产品满意度由 7.2 提升至 8.6，支持团队获得年度体验奖</li></ol><ol></ol>"
         },
         {
           "id": "1e95f0bf-5c8f-4ec9-9ce5-d10ebb0fd32a",
@@ -130,17 +128,17 @@
           "endDate": "",
           "description": "",
           "bullets": [],
-          "contentHtml": "<ul><li>sddddddddasfsdafsd</li><li>sdjkjfdsjakdkljsafds\\sadklfjsadlkf</li><li><br></li></ul>"
+          "contentHtml": "<ul><li>sddddddddasfsdafsd</li><li>sdjkjfdsjakdkljsafds\\sadklfjsadlkf</li></ul><ol><li>即撒娇方式<br>撒点附近开了撒点附近阿斯科利<br>撒点附近几点到家</li></ol>"
         },
         {
-          "id": "f9c8effb-d9f8-49b7-b2ba-f782b597802a",
+          "id": "5b5703af-d492-490c-939e-782812085495",
           "title": "",
           "subtitle": "",
           "startDate": "",
           "endDate": "",
           "description": "",
           "bullets": [],
-          "contentHtml": ""
+          "contentHtml": "<p data-indent=\"4\">撒的看法撒开金凤的撒点发爱上</p><p data-indent=\"4\"><i>撒金凤说啊时代发</i></p><p><i></i></p>"
         }
       ]
     },
@@ -157,7 +155,8 @@
           "startDate": "2015.09",
           "endDate": "2019.06",
           "description": "",
-          "bullets": []
+          "bullets": [],
+          "contentHtml": "<br>"
         }
       ]
     },
@@ -180,6 +179,26 @@
             "用户研究与数据分析",
             "设计系统"
           ]
+        },
+        {
+          "id": "8ac984d3-b474-4e76-9c63-c95c2799d7d8",
+          "title": "",
+          "subtitle": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "bullets": [],
+          "contentHtml": "司法是非得失撒点发顺丰<br>撒几点发撒撒点发<br>"
+        },
+        {
+          "id": "be62b136-0e17-49be-b216-127b88e38735",
+          "title": "",
+          "subtitle": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "bullets": [],
+          "contentHtml": "<ol><li>sadfasfsdafdsjjds</li><li>djjadjklfdsaj</li><li>safasjf</li></ol>"
         }
       ]
     },
@@ -211,13 +230,23 @@
         },
         {
           "id": "a4c371cc-2a17-4d07-b3a9-5b1360f036e3",
+          "title": "ssss",
+          "subtitle": "",
+          "startDate": "2026.07",
+          "endDate": "2026.08",
+          "description": "",
+          "bullets": [],
+          "contentHtml": ""
+        },
+        {
+          "id": "3fb5961e-5213-4ed6-aa59-9062b8f5a111",
           "title": "",
           "subtitle": "",
           "startDate": "",
           "endDate": "",
           "description": "",
           "bullets": [],
-          "contentHtml": ""
+          "contentHtml": "sdd ddasdf"
         }
       ]
     }

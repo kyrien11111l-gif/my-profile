@@ -70,7 +70,7 @@ interface ResumeContextValue extends State {
   select: (id: string) => void
   undo: () => void
   redo: () => void
-  saveNow: () => Promise<void>
+  saveNow: () => Promise<boolean>
   reload: () => void
 }
 
@@ -92,20 +92,22 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
 
   useEffect(load, [load])
 
-  const persist = useCallback(async (document: ResumeDocument) => {
+  const persist = useCallback(async (document: ResumeDocument): Promise<boolean> => {
     const parsed = validateResume(document)
     if (!parsed.success) {
       const issue = parsed.error.issues[0]
       dispatch({ type: 'saveError', invalid: true, message: issue?.message || '请检查表单内容。' })
-      return
+      return false
     }
     const token = ++saveToken.current
     dispatch({ type: 'saving' })
     try {
       await saveResume(parsed.data)
       if (token === saveToken.current) dispatch({ type: 'saved' })
+      return true
     } catch (error) {
       if (token === saveToken.current) dispatch({ type: 'saveError', message: (error as Error).message })
+      return false
     }
   }, [])
 
@@ -126,7 +128,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
     select: (id) => dispatch({ type: 'select', id }),
     undo: () => { saveToken.current += 1; dispatch({ type: 'undo' }) },
     redo: () => { saveToken.current += 1; dispatch({ type: 'redo' }) },
-    saveNow: async () => { if (state.document) await persist(state.document) },
+    saveNow: async () => state.document ? persist(state.document) : false,
     reload: () => { load() },
   }), [state, persist, load])
 

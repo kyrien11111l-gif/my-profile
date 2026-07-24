@@ -25,13 +25,36 @@ button:disabled { cursor: not-allowed; opacity: .4; }
 .rich-content p { margin: 0 0 7px; }
 .rich-content ul, .rich-content ol { margin: 3px 0 7px; padding-left: 1.8em; }
 .rich-content ul { list-style: disc; }
-.rich-content ol { list-style: decimal; }
+.rich-content ol { list-style: none; counter-reset: resume-ordered-list; }
 .rich-content li { margin: 2px 0; }
+.rich-content ol > li,
+.rich-preview ol > li {
+  position: relative;
+  counter-increment: resume-ordered-list;
+}
+.rich-content ol > li::before,
+.rich-preview ol > li::before {
+  display: inline-block;
+  position: absolute;
+  right: calc(100% + .2em);
+  width: max-content;
+  min-width: 2ch;
+  white-space: nowrap;
+  text-align: right;
+  content: counter(resume-ordered-list) ".";
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
 .rich-content a { color: #2563eb; text-decoration: underline; }
+.rich-content [data-indent="1"], .rich-preview [data-indent="1"] { margin-left: 1.5em; }
+.rich-content [data-indent="2"], .rich-preview [data-indent="2"] { margin-left: 3em; }
+.rich-content [data-indent="3"], .rich-preview [data-indent="3"] { margin-left: 4.5em; }
+.rich-content [data-indent="4"], .rich-preview [data-indent="4"] { margin-left: 6em; }
 .rich-preview p { margin: 1px 0; color: #000; }
 .rich-preview ul, .rich-preview ol { margin: 1px 0 0; padding-left: 1.25em; color: #000; }
 .rich-preview ul { list-style: disc; }
-.rich-preview ol { list-style: decimal; }
+.rich-preview ol { list-style: none; counter-reset: resume-ordered-list; }
 .rich-preview li { margin: 0; padding-left: .12em; line-height: var(--resume-leading); }
 .rich-preview li::marker { color: #000; }
 .rich-preview a { color: inherit; text-decoration: underline; }
@@ -60,7 +83,10 @@ button:disabled { cursor: not-allowed; opacity: .4; }
     overflow: visible;
     background: white;
   }
-  .no-print, .editor-column, .preview-label, .resume-measure { display: none !important; }
+  .no-print, .editor-column, .preview-label { display: none !important; }
+  /* Keep the off-canvas measurement tree laid out while printing. Hiding it
+     with display:none would trigger repagination with zero-height content. */
+  .resume-measure { visibility: hidden !important; }
   .app-shell, .workspace, .preview-column, .preview-stage {
     display: block;
     width: auto;

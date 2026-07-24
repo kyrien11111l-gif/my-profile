@@ -12,6 +12,34 @@ export function App() {
   const { document, loading, loadError, reload } = useResume()
   const [mobilePane, setMobilePane] = useState<'edit' | 'preview'>('edit')
   const [drawer, setDrawer] = useState<'style' | 'modules' | null>(null)
+  const [editorLayout, setEditorLayout] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('resume-studio:editor-layout') || 'null') as { width?: unknown; hidden?: unknown } | null
+      return {
+        width: typeof saved?.width === 'number' && saved.width >= 430 && saved.width <= 760 ? saved.width : 560,
+        hidden: typeof saved?.hidden === 'boolean' ? saved.hidden : false,
+      }
+    } catch {
+      return { width: 560, hidden: false }
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('resume-studio:editor-layout', JSON.stringify(editorLayout))
+  }, [editorLayout])
+
+  const startResize = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    const startX = event.clientX
+    const startWidth = editorLayout.width
+    const move = (moveEvent: PointerEvent) => setEditorLayout((layout) => ({ ...layout, width: Math.min(760, Math.max(430, startWidth + moveEvent.clientX - startX)) }))
+    const stop = () => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', stop)
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', stop)
+  }
 
   useEffect(() => {
     if (!document) return
@@ -54,10 +82,12 @@ export function App() {
         onMobilePane={setMobilePane}
         onStyle={() => setDrawer(drawer === 'style' ? null : 'style')}
         onModules={() => setDrawer(drawer === 'modules' ? null : 'modules')}
+        editorHidden={editorLayout.hidden}
+        onToggleEditor={() => setEditorLayout((layout) => ({ ...layout, hidden: !layout.hidden }))}
       />
-      <div className="workspace grid h-[calc(100vh-58px)] grid-cols-[88px_minmax(470px,560px)_minmax(550px,1fr)] max-[1100px]:grid-cols-[78px_minmax(430px,520px)_minmax(520px,1fr)] max-[820px]:block">
-        <Sidebar />
-        <section className={`editor-column relative min-w-0 border-r border-[#d9dce5] bg-[#f4f5f9] h-full overflow-y-auto max-[820px]:border-0 ${mobilePane === 'preview' ? 'max-[820px]:hidden' : ''}`}>
+      <div className="workspace grid h-[calc(100vh-58px)] max-[820px]:block" style={{ gridTemplateColumns: editorLayout.hidden ? '0 0 0 minmax(550px, 1fr)' : `88px ${editorLayout.width}px 8px minmax(550px, 1fr)` }}>
+        <div className={editorLayout.hidden ? 'overflow-hidden max-[820px]:block' : ''}><Sidebar /></div>
+        <section className={`editor-column relative min-w-0 border-r border-[#d9dce5] bg-[#f4f5f9] h-full overflow-y-auto max-[820px]:border-0 ${editorLayout.hidden ? 'overflow-hidden max-[820px]:block' : ''} ${mobilePane === 'preview' ? 'max-[820px]:hidden' : ''}`}>
           <EditorPanel />
           {drawer && (
             <div className="absolute inset-0 z-10 flex justify-end bg-[#25293842] backdrop-blur-[2px]" role="dialog" aria-label={drawer === 'style' ? '模板样式' : '模块管理'}>
@@ -65,6 +95,23 @@ export function App() {
             </div>
           )}
         </section>
+        <div
+          role="separator"
+          aria-label="调整编辑栏宽度"
+          aria-orientation="vertical"
+          aria-valuemin={430}
+          aria-valuemax={760}
+          aria-valuenow={editorLayout.width}
+          tabIndex={editorLayout.hidden ? -1 : 0}
+          className={`${editorLayout.hidden ? 'pointer-events-none opacity-0' : ''} no-print group relative cursor-col-resize bg-[#e6e8ee] outline-none max-[820px]:hidden`}
+          onPointerDown={startResize}
+          onKeyDown={(event) => {
+            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+            event.preventDefault()
+            const delta = event.key === 'ArrowLeft' ? -16 : 16
+            setEditorLayout((layout) => ({ ...layout, width: Math.min(760, Math.max(430, layout.width + delta)) }))
+          }}
+        ><span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-[#c9cdd7] group-hover:w-0.5 group-hover:bg-[#f16d47] group-focus:w-0.5 group-focus:bg-[#f16d47]" /></div>
         <section className={`preview-column min-w-0 overflow-auto bg-[#e6e8ee] [container-type:inline-size] max-[820px]:h-[calc(100%-62px)] ${mobilePane === 'edit' ? 'max-[820px]:hidden' : ''}`}>
           <div className="preview-stage flex min-h-full min-w-0 flex-col items-center px-[34px] pt-[26px] pb-[70px] max-[820px]:items-start max-[820px]:px-6 max-[820px]:pt-[18px] max-[820px]:pb-[60px]">
             <div className="preview-label mx-auto mb-2.5 flex w-[556px] items-center gap-1.5 text-[11px] text-[#9398a3]"><FileText size={14} />A4 实时预览</div>

@@ -15,4 +15,8 @@ describe('rich text helpers', () => {
     const html = sanitizeRichText('<p><strong>安全内容</strong><img src=x onerror=alert(1)></p><script>alert(1)</script>')
     expect(html).toBe('<p><strong>安全内容</strong></p>')
   })
+
+  it('preserves safe indentation metadata while stripping arbitrary styles', () => {
+    expect(sanitizeRichText('<p data-indent="2" style="color:red">缩进内容</p>')).toBe('<p data-indent="2">缩进内容</p>')
+  })
 })

@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { validateResume } from '../shared/resume.ts'
 import { readResumeFile, ResumeFileError, writeResumeFile } from './storage.ts'
+import { generateResumePdf } from './pdf.ts'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(currentDirectory, '..')
@@ -10,6 +11,7 @@ const projectRoot = path.resolve(currentDirectory, '..')
 export interface AppOptions {
   dataFile?: string
   serveStatic?: boolean
+  pdfGenerator?: (sourceUrl: string) => Promise<Uint8Array>
 }
 
 export function createApp(options: AppOptions = {}) {
@@ -51,6 +53,38 @@ export function createApp(options: AppOptions = {}) {
     } catch (error) {
       const fileError = error as ResumeFileError
       response.status(500).json({ error: fileError.message || '保存简历失败。', code: 'WRITE_FAILED' })
+    }
+  })
+
+  app.post('/api/resume/pdf', async (request, response) => {
+    try {
+      const originHeader = request.get('origin')
+      if (!originHeader) {
+        response.status(400).json({ error: '缺少页面来源，无法生成 PDF。', code: 'INVALID_PDF_SOURCE' })
+        return
+      }
+      const origin = new URL(originHeader)
+      const requestHost = request.hostname.replace(/^\[|\]$/g, '')
+      const originHost = origin.hostname.replace(/^\[|\]$/g, '')
+      const loopback = new Set(['localhost', '127.0.0.1', '::1'])
+      const sameHost = requestHost === originHost || (loopback.has(requestHost) && loopback.has(originHost))
+      if (!sameHost || !['http:', 'https:'].includes(origin.protocol)) {
+        response.status(403).json({ error: 'PDF 页面来源不受信任。', code: 'INVALID_PDF_SOURCE' })
+        return
+      }
+      const sourceUrl = new URL('/', origin)
+      sourceUrl.searchParams.set('pdf', '1')
+      const pdf = await (options.pdfGenerator ?? generateResumePdf)(sourceUrl.toString())
+      const resume = await readResumeFile(dataFile)
+      const safeName = (resume.basics.name.trim() || '未命名').replace(/[\\/:*?"<>|]/g, '_')
+      const encodedFilename = encodeURIComponent(`${safeName}-简历.pdf`)
+      response.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodedFilename}`,
+        'Content-Length': String(pdf.byteLength),
+      }).send(Buffer.from(pdf))
+    } catch (error) {
+      response.status(500).json({ error: (error as Error).message || 'PDF 生成失败。', code: 'PDF_GENERATION_FAILED' })
     }
   })
 
